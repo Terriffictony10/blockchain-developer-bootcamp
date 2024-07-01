@@ -22,7 +22,7 @@ async function main() {
   const exchange = await Exchange.deploy(accounts[1].address, 10)
   await exchange.deployed()
 
-  console.log(`Exchange deployed to: ${_IRIS.address}`)
+  console.log(`Exchange deployed to: ${exchange.address}`)
 
 }
 
