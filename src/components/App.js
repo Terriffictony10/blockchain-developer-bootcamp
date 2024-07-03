@@ -1,25 +1,31 @@
 import { useEffect } from 'react';
-import { ethers } from 'ethers';
-import TOKEN_ABI from "../abis/Token.json"
-import '../App.css';
+import { useDispatch } from 'react-redux'
+
+import { 
+loadProvider, 
+loadNetwork, 
+loadAccount, 
+loadToken 
+} from '../store/interactions'
+
 import config from '../config.json'
 
 
 function App() {
 
+  const dispatch = useDispatch()
 
   const loadBlockchaindata = async () => {
-    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' })
-    console.log(accounts[0])
+    await loadAccount(dispatch)
+    
 
-    const provider = new ethers.providers.Web3Provider(window.ethereum)
-    const { chainId } = await provider.getNetwork()
-    console.log(chainId)
-    const token = new ethers.Contract(config[chainId].TonyToken.address, TOKEN_ABI, provider )
-    console.log(token.address)
-    const symbol = await token.symbol()
-    console.log(symbol)
-    console.log(config)
+    const provider = loadProvider(dispatch)
+    const chainId = await loadNetwork(provider, dispatch)
+
+    
+    await loadToken(provider, config[chainId].TonyToken.address, dispatch)
+    
+    
 
   } 
 
