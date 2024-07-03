@@ -5,7 +5,8 @@ import {
 loadProvider, 
 loadNetwork, 
 loadAccount, 
-loadToken 
+loadTokens, 
+loadExchange
 } from '../store/interactions'
 
 import config from '../config.json'
@@ -16,16 +17,19 @@ function App() {
   const dispatch = useDispatch()
 
   const loadBlockchaindata = async () => {
-    await loadAccount(dispatch)
-    
-
     const provider = loadProvider(dispatch)
     const chainId = await loadNetwork(provider, dispatch)
 
+
+    await loadAccount(provider, dispatch)
     
-    await loadToken(provider, config[chainId].TonyToken.address, dispatch)
+
+    const TonyToken = config[chainId].TonyToken.address
+    const ElyseToken = config[chainId].ElyseToken.address
+    const Exchange = config[chainId].exchange.address
+    await loadTokens(provider, [TonyToken, ElyseToken] , dispatch)
     
-    
+    await loadExchange(provider, Exchange, dispatch)
 
   } 
 
