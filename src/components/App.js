@@ -9,6 +9,7 @@ loadTokens,
 loadExchange
 } from '../store/interactions'
 
+import Navbar from './Navbar'
 import config from '../config.json'
 
 
@@ -20,8 +21,12 @@ function App() {
     const provider = loadProvider(dispatch)
     const chainId = await loadNetwork(provider, dispatch)
 
-
-    await loadAccount(provider, dispatch)
+    window.ethereum.on('chainChanged', () => {
+      window.location.reload()
+    })
+    window.ethereum.on('accountsChanged', () => {
+      loadAccount(provider, dispatch)
+    })
     
 
     const TonyToken = config[chainId].TonyToken.address
@@ -40,7 +45,7 @@ function App() {
   return (
     <div>
 
-      {/* Navbar */}
+      <Navbar />
 
       <main className='exchange grid'>
         <section className='exchange__section--left grid'>
@@ -61,7 +66,7 @@ function App() {
           {/* Trades */}
 
           {/* OrderBook */}
-
+          
         </section>
       </main>
 
