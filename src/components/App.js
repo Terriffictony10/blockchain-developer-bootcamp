@@ -8,7 +8,7 @@ loadAccount,
 loadTokens, 
 loadExchange
 } from '../store/interactions'
-
+import Markets from './Markets'
 import Navbar from './Navbar'
 import config from '../config.json'
 
@@ -18,7 +18,7 @@ function App() {
   const dispatch = useDispatch()
 
   const loadBlockchaindata = async () => {
-    const provider = loadProvider(dispatch)
+    const provider = await loadProvider(dispatch)
     const chainId = await loadNetwork(provider, dispatch)
 
     window.ethereum.on('chainChanged', () => {
@@ -50,7 +50,7 @@ function App() {
       <main className='exchange grid'>
         <section className='exchange__section--left grid'>
 
-          {/* Markets */}
+          <Markets />
 
           {/* Balance */}
 

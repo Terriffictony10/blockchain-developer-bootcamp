@@ -3,21 +3,25 @@ import logo from '../assets/logo.png'
 import eth from '../assets/eth.svg'
 import Blockies from 'react-blockies'
 import { 
-loadAccount
+loadAccount,
+loadProvider,
+loadNetwork
 } from '../store/interactions'
 
-
+import { useEffect } from 'react';
 
 import { useDispatch } from 'react-redux'
-
+import config from '../config.json'
 
 const Navbar = () => {
   const provider = useSelector(state => state.provider.connection)
-  const chainId = useSelector(state => state.provider.connection)
+  const chainId = useSelector(state => state.provider.chainId) 
   const account = useSelector(state => state.provider.account)
-  const balance = useSelector(state => state.provider.balance)
-
+  const balance = useSelector(state => state.provider.balance) 
   const dispatch = useDispatch()
+
+
+
   const connectHandler = async () => {
     await loadAccount(provider, dispatch)
   }
@@ -27,7 +31,7 @@ const Navbar = () => {
       params: [{ chainId: event.target.value}]
     })
   }
-
+ 
   return(
     <div className='exchange__header grid'>
       <div className='exchange__header--brand flex'>
@@ -38,13 +42,12 @@ const Navbar = () => {
       <div className='exchange__header--networks flex'>
           <img src = {eth} className = "Eth logo" alt = "Eth logo"></img>
 
-          {provider && chainId && (
-            <select name="networks" id="networks" value={chainId ? `0x${chainId.toString(16)}` : '0'} onChange={networkHandler}>
+              <select name="networks" id="networks" value={chainId ? `0x${chainId.toString(16)}` : '0'} onChange={networkHandler}>
               <option value="0" disabled>Select Network</option>
               <option value="0x7A69" >Localhost</option>
               <option value="0xaa36a7" >Sepolia</option>
             </select> 
-        )}
+        
 
           
       </div>
