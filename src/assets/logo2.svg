@@ -1,0 +1,13 @@
+<svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="20" height="20" fill="white"/>
+
+  <!-- Salmon (Lowered and Rotated) -->
+  <path d="M3 8 Q9 4, 17 8 Q19 9, 17 11 Q11 15, 3 11 Q1 10, 3 8 Z" fill="#FFA07A" stroke="black" stroke-width="0.2"/>
+
+  <!-- Salmon Texture -->
+  <path d="M3.5 8 Q9 5, 16.5 8 M4 9 Q9 6, 16 9 M4.5 10 Q9 7, 15.5 10 M5 11 Q9 8, 15 11" stroke="#FF6347" stroke-width="0.2"/>
+
+  <!-- Rice (Visible Under Salmon, Towards Back) -->
+  <ellipse cx="10" cy="14" rx="6" ry="2.5" fill="white" stroke="black" stroke-width="0.2"/>
+</svg>

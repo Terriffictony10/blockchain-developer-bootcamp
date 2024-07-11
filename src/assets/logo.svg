@@ -1,0 +1,15 @@
+<svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+  
+  <ellipse cx="10" cy="10" rx="9" ry="9" fill="#F28C28" stroke="black" stroke-width="1"/>
+
+  
+  <path d="M1 6 Q10 2 19 6" fill="none" stroke="black" stroke-width="0.5"/>
+  <path d="M1 10 Q10 6 19 10" fill="none" stroke="black" stroke-width="0.5"/>
+  <path d="M1 14 Q10 10 19 14" fill="none" stroke="black" stroke-width="0.5"/>
+  <path d="M1 18 Q10 14 19 18" fill="none" stroke="black" stroke-width="0.5"/>
+
+  
+  <path d="M5 1 Q2 10 5 19" fill="none" stroke="black" stroke-width="0.5"/>
+  <path d="M10 1 Q10 10 10 19" fill="none" stroke="black" stroke-width="0.5"/>
+  <path d="M15 1 Q18 10 15 19" fill="none" stroke="black" stroke-width="0.5"/>
+</svg>

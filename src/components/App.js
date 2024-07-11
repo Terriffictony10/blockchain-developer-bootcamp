@@ -8,6 +8,7 @@ loadAccount,
 loadTokens, 
 loadExchange
 } from '../store/interactions'
+import Balance from './Balance'
 import Markets from './Markets'
 import Navbar from './Navbar'
 import config from '../config.json'
@@ -52,7 +53,7 @@ function App() {
 
           <Markets />
 
-          {/* Balance */}
+          <Balance />
 
           {/* Order */}
 

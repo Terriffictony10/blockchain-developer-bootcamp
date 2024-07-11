@@ -33,6 +33,7 @@ export const loadTokens = async (provider, addresses, dispatch) => {
 	let token, symbol
 
 	token = new ethers.Contract(addresses[0], TOKEN_ABI, provider)
+	
 	symbol = await token.symbol()
 
     dispatch({ type: 'TOKEN_1_LOADED', token, symbol })
@@ -49,3 +50,33 @@ export const loadExchange = async (provider, address, dispatch) => {
 	dispatch({ type: 'EXCHANGE_LOADED', exchange })
     return exchange
 }
+export const loadBalances = async (exchange, tokens, account, dispatch) => {
+	let balance = ethers.utils.formatUnits(await tokens[0].balanceOf(account), 18) 
+	dispatch({ type: 'TOKEN_1_BALANCE_LOADED', balance })
+
+	balance = ethers.utils.formatUnits(await exchange.balanceOf(tokens[0].address, account), 18)
+	dispatch({ type: 'EXCHANGE_TOKEN_1_BALANCE_LOADED', balance })
+
+	balance = ethers.utils.formatUnits(await tokens[1].balanceOf(account), 18)
+	dispatch({ type: 'TOKEN_2_BALANCE_LOADED', balance })
+
+	balance = ethers.utils.formatUnits(await exchange.balanceOf(tokens[1].address, account), 18)
+	dispatch({ type: 'EXCHANGE_TOKEN_2_BALANCE_LOADED', balance })
+
+
+}
+
+export const transferTokens = async (provider, exchange, transferType, token, amount, dispatch) => {
+	let transaction
+	const signer = await provider.getSigner()
+	const amountToTransfer = ethers.utils.parseUnits(amount.toString(), 18)
+
+	transaction = await token.connect(signer).approve(exchange.address, amountToTransfer)
+	await transaction.wait()
+	transaction = await exchange.connect(signer).depositToken(token.address, amountToTransfer)
+
+	await transaction.wait()
+
+}
+
+
