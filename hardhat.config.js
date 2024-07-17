@@ -6,6 +6,11 @@ require("dotenv").config();
 module.exports = {
   solidity: "0.8.19",
   networks: {
-    localhost: {}
+    localhost: {},
+    hardhat: {
+      mining: {
+        auto: true// Mining interval between 3 to 6 seconds
+      }
+    }
   },
 };

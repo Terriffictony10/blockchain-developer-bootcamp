@@ -6,8 +6,14 @@ loadProvider,
 loadNetwork, 
 loadAccount, 
 loadTokens, 
-loadExchange
+loadExchange,
+subscribeToEvents, 
+loadAllOrders
 } from '../store/interactions'
+import Trades from './Trades'
+import PriceChart from './PriceChart'
+import OrderBook from './OrderBook'
+import Orders from './Orders'
 import Balance from './Balance'
 import Markets from './Markets'
 import Navbar from './Navbar'
@@ -35,8 +41,11 @@ function App() {
     const Exchange = config[chainId].exchange.address
     await loadTokens(provider, [TonyToken, ElyseToken] , dispatch)
     
-    await loadExchange(provider, Exchange, dispatch)
+    const exchange = await loadExchange(provider, Exchange, dispatch)
 
+    loadAllOrders(provider, exchange, dispatch)
+
+    subscribeToEvents(exchange, dispatch)
   } 
 
   useEffect(() => {
@@ -55,18 +64,18 @@ function App() {
 
           <Balance />
 
-          {/* Order */}
+          <Orders />
 
         </section>
         <section className='exchange__section--right grid'>
 
-          {/* PriceChart */}
+          <PriceChart />
 
           {/* Transactions */}
 
-          {/* Trades */}
+          <Trades />
 
-          {/* OrderBook */}
+          <OrderBook />
           
         </section>
       </main>

@@ -62,6 +62,14 @@ export const tokens = (state = DEFAULT_TOKEN_STATE, action) => {
 const DEFAULT_EXCHANGE_STATE = {
 	loaded: false,
 	contract: {},  
+	transaction: {
+		isSuccessful: false
+	},
+	allOrders: {
+		loaded: false,
+		data: []
+	},
+	events: []
 }
 export const exchange = (state = DEFAULT_EXCHANGE_STATE, action) => {
 	switch (action.type) {
@@ -70,6 +78,30 @@ export const exchange = (state = DEFAULT_EXCHANGE_STATE, action) => {
 				...state,
 				loaded: true,
 				contract: action.exchange
+			}
+		case 'CANCELLED_ORDERS_LOADED':
+			return{
+				...state,
+				cancelledOrders:{
+					loaded: true,
+					data: action.cancelledOrders
+				}
+			}
+		case 'FILLED_ORDERS_LOADED':
+			return{
+				...state,
+				filledOrders:{
+					loaded: true,
+					data: action.filledOrders
+				}
+			}
+		case 'ALL_ORDERS_LOADED':
+			return{
+				...state,
+				allOrders: {
+					loaded: true,
+					data: action.allOrders
+				}
 			}
 		case 'EXCHANGE_TOKEN_1_BALANCE_LOADED':
 			return{
@@ -81,12 +113,87 @@ export const exchange = (state = DEFAULT_EXCHANGE_STATE, action) => {
 				...state,
 				balances: [...state.balances, action.balance]
 			}
+		case 'TRANSFER_REQUEST':
+			return{
+				...state,
+				transaction: {
+					transactionType: 'Transfer',
+					isPending: true,
+					isSuccessful: false
+				},
+				transferInProgress: true 
+			}
+		case 'TRANSFER_SUCCESS':
+			return{
+				...state,
+				transaction: {
+					transactionType: 'Transfer',
+					isPending: false,
+					isSuccessful: true
+				},
+				transferInProgress: false,
+				events: [action.event, ...state.events]
+			}
+		case 'TRANSFER_FAIL':
+			return{
+				...state,
+				transaction: {
+					transactionType: 'Transfer',
+					isPending: false,
+					isSuccessful: false,
+					isError: true
+				},
+				transferInProgress: false
+			}
+		case 'NEW_ORDER_REQUEST':
+			return{
+				...state,
+				transaction: {
+					transactionType: 'NewOrder',
+					isPending: true,
+					isSuccessful: false
+				}
+			}
+		case 'NEW_ORDER_FAIL':
+			return{
+				...state,
+				transaction: {
+					transactionType: 'NewOrder',
+					isPending: false,
+					isSuccessful: false,
+					isError: true
+				},
+				transferInProgress: false
+			}
+		case 'NEW_ORDER_SUCCESS':
+
+			let index = state.allOrders.data.findIndex(order => order.id.toString() === action.order.id.toString())
+
+			let data
+
+			if(index=== -1) {
+				data = [...state.allOrders.data, action.order]
+			} else {
+				data = state.allOrders.data
+			}
+ 
+			return{
+				...state,
+				allOrders: {
+					...state.allOrders,
+					data
+				},
+				transaction: {
+					transactionType: 'NewOrder',
+					isPending: false,
+					isSuccessful: true
+				},
+				events: [action.event, ...state.events]
+			}
 		default:
 			return state
 	}
 }
-
-
 
 
 
