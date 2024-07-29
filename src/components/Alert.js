@@ -30,7 +30,7 @@ const Alert = () => {
   if (account) {
     return (
       <div>
-        {events[0] && (isPending ? (
+        {isPending ? (
           <div className="alert alert--remove" onClick={removeHandler} ref={alertRef}>
             <h1>Transaction Pending...</h1>
           </div>
@@ -52,7 +52,7 @@ const Alert = () => {
         ) : (
           <div className="alert alert--remove" onClick={removeHandler} ref={alertRef}>
           </div>
-        ))}
+        )}
       </div>
     );
   } else {

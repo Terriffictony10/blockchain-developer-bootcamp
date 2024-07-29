@@ -75,7 +75,12 @@ const DEFAULT_EXCHANGE_STATE = {
 	filledOrders: {
 		data: []
 	},
-	events: []
+	events: [{
+		transactionHash: "",
+		args: {
+			user: ""
+		}
+	}]
 }
 export const exchange = (state = DEFAULT_EXCHANGE_STATE, action) => {
 	let index, data 
