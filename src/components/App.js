@@ -78,7 +78,7 @@ function App() {
         </section>
       </main>
 
-      <Alert />
+      {chainId && <Alert />}
     </div>
   );
 }
