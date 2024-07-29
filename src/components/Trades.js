@@ -1,19 +1,27 @@
 import { useSelector } from 'react-redux';
+
+import sort from '../assets/sort.svg'
+
 import { filledOrdersSelector } from '../store/selectors';
+
+import Banner from './Banner';
 const Trades = () => {
   const filledOrders = useSelector(filledOrdersSelector)
+  const symbols = useSelector(state => state.tokens.symbols)
   return (
     <div className="component exchange__trades">
       <div className='component__header flex-between'>
         <h2>Trades</h2>
       </div>
-
-      <table>
+      {!filledOrders || filledOrders.length === 0 ? (
+        <Banner text="No Transactions" />
+      ) : (
+        <table>
         <thead>
           <tr>
-            <th></th>
-            <th></th>
-            <th></th>
+            <th>Time<img src={sort} alt="Sort" /></th>
+            <th>{symbols && symbols[0]}<img src={sort} alt="Sort" /></th>
+            <th>{symbols && symbols[0]} / {symbols && symbols[1]}<img src={sort} alt="Sort" /></th>
           </tr>
         </thead>
         <tbody>
@@ -30,6 +38,8 @@ const Trades = () => {
           
         </tbody>
       </table>
+      )}
+      
 
     </div>
   );

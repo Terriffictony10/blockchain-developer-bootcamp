@@ -8,6 +8,7 @@ import {
 loadBalances,
 transferTokens
 } from '../store/interactions'
+import Banner from './Banner';
 
 const Balance = () => {
   const [isDeposit, setIsDeposit] = useState(true)
@@ -87,7 +88,7 @@ const Balance = () => {
     loadBalances(exchange, tokens, account, dispatch)
     }
   }, [dispatch, exchange, tokens, account, transferInProgress])
-  return (
+  return (account ? (
     <div className='component exchange__transfers'>
       <div className='component__header flex-between'>
         <h2>Balance</h2>
@@ -195,6 +196,27 @@ const Balance = () => {
 
       <hr />
     </div>
+    ) : (<div className='component exchange__transfers'>
+      
+
+
+
+      <div className='exchange__transfers--form'>
+        <div className='flex-between'>
+
+        </div>
+
+        <p><Banner text={"Please connect with Metamask"} /></p>
+      </div>
+
+      
+
+      
+
+
+    </div>
+      
+    )
   );
 }
 

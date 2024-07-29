@@ -1,18 +1,19 @@
-//SPDX-License-Identifier: Unlicense
+// SPDX-License-Identifier: Unlicense
 pragma solidity ^0.8.0;
 
 import "hardhat/console.sol";
 import "./Token.sol";
 
 contract Exchange {
-    address public feeAccount;
-    uint256 public feePercent;
-    mapping(address => mapping(address => uint256)) public tokens;
-    mapping(uint256 => _Order) public orders;
-    uint256 public orderCount;
-    mapping(uint256 => bool) public orderCancelled;
-    mapping(uint256 => bool) public orderFilled;
+    address public feeAccount; // Account that receives trading fees
+    uint256 public feePercent; // Percentage of the trade amount taken as fee
+    mapping(address => mapping(address => uint256)) public tokens; // Token balances mapped by token addresses and user addresses
+    mapping(uint256 => _Order) public orders; // Mapping of order IDs to Order structs
+    uint256 public orderCount; // Counter for the total number of orders
+    mapping(uint256 => bool) public orderCancelled; // Mapping to track if an order is cancelled
+    mapping(uint256 => bool) public orderFilled; // Mapping to track if an order is filled
 
+    // Events to emit on various actions
     event Deposit(
         address token,
         address user,
@@ -54,51 +55,54 @@ contract Exchange {
         uint256 timestamp
     );
 
+    // Structure of an order
     struct _Order {
-        // Attributes of an order
-        uint256 id; // Unique identifier for order
-        address user; // User who made order
-        address tokenGet; // Address of the token they receive
-        uint256 amountGet; // Amount they receive
-        address tokenGive; // Address of token they give
-        uint256 amountGive; // Amount they give
-        uint256 timestamp; // When order was created
+        uint256 id; // Unique identifier for the order
+        address user; // User who created the order
+        address tokenGet; // Address of the token to receive
+        uint256 amountGet; // Amount of token to receive
+        address tokenGive; // Address of the token to give
+        uint256 amountGive; // Amount of token to give
+        uint256 timestamp; // Timestamp when the order was created
     }
 
+    // Constructor to initialize the fee account and fee percentage
     constructor(address _feeAccount, uint256 _feePercent) {
         feeAccount = _feeAccount;
         feePercent = _feePercent;
     }
 
-
     // ------------------------
     // DEPOSIT & WITHDRAW TOKEN
 
+    // Function to deposit tokens into the exchange
     function depositToken(address _token, uint256 _amount) public {
-        // Transfer tokens to exchange
+        // Transfer tokens from the user to the exchange
         require(Token(_token).transferFrom(msg.sender, address(this), _amount));
 
-        // Update user balance
+        // Update user's token balance
         tokens[_token][msg.sender] = tokens[_token][msg.sender] + _amount;
 
-        // Emit an event
+        // Emit a deposit event
         emit Deposit(_token, msg.sender, _amount, tokens[_token][msg.sender]);
     }
 
+    // Function to withdraw tokens from the exchange
     function withdrawToken(address _token, uint256 _amount) public {
-        // Ensure user has enough tokens to withdraw
+        // Ensure the user has enough tokens to withdraw
         require(tokens[_token][msg.sender] >= _amount);
 
-        // Transfer tokens to user
+        // Transfer tokens from the exchange to the user
         Token(_token).transfer(msg.sender, _amount);
 
-        // Update user balance
+        // Update user's token balance
         tokens[_token][msg.sender] = tokens[_token][msg.sender] - _amount;
 
-        // Emit event
+        // Emit a withdraw event
         emit Withdraw(_token, msg.sender, _amount, tokens[_token][msg.sender]);
     }
 
+    // Function to check the token balance of a user
     function balanceOf(address _token, address _user)
         public
         view
@@ -107,20 +111,20 @@ contract Exchange {
         return tokens[_token][_user];
     }
 
-
     // ------------------------
     // MAKE & CANCEL ORDERS
 
+    // Function to create a new order
     function makeOrder(
         address _tokenGet,
         uint256 _amountGet,
         address _tokenGive,
         uint256 _amountGive
     ) public {
-        // Prevent orders if tokens aren't on exchange
+        // Ensure the user has enough tokens to create the order
         require(balanceOf(_tokenGive, msg.sender) >= _amountGive);
 
-        // Instantiate a new order
+        // Increment the order count and create a new order
         orderCount ++;
         orders[orderCount] = _Order(
             orderCount,
@@ -132,7 +136,7 @@ contract Exchange {
             block.timestamp
         );
 
-        // Emit event
+        // Emit an order event
         emit Order(
             orderCount,
             msg.sender,
@@ -144,20 +148,21 @@ contract Exchange {
         );
     }
 
+    // Function to cancel an existing order
     function cancelOrder(uint256 _id) public {
-        // Fetch order
+        // Fetch the order to be cancelled
         _Order storage _order = orders[_id];
 
-        // Ensure the caller of the function is the owner of the order
+        // Ensure the caller is the creator of the order
         require(address(_order.user) == msg.sender);
 
-        // Order must exist
+        // Ensure the order exists
         require(_order.id == _id);
 
-        // Cancel the order
+        // Mark the order as cancelled
         orderCancelled[_id] = true;
 
-        // Emit event
+        // Emit a cancel event
         emit Cancel(
             _order.id,
             msg.sender,
@@ -169,19 +174,19 @@ contract Exchange {
         );
     }
 
-
     // ------------------------
     // EXECUTING ORDERS
 
+    // Function to fill an existing order
     function fillOrder(uint256 _id) public {
-        // 1. Must be valid orderId
+        // Ensure the order ID is valid
         require(_id > 0 && _id <= orderCount, "Order does not exist");
-        // 2. Order can't be filled
+        // Ensure the order is not already filled
         require(!orderFilled[_id]);
-        // 3. Order can't be cancelled
+        // Ensure the order is not cancelled
         require(!orderCancelled[_id]);
 
-        // Fetch order
+        // Fetch the order to be filled
         _Order storage _order = orders[_id];
 
         // Execute the trade
@@ -194,10 +199,11 @@ contract Exchange {
             _order.amountGive
         );
 
-        // Mark order as filled
+        // Mark the order as filled
         orderFilled[_order.id] = true;
     }
 
+    // Internal function to execute a trade
     function _trade(
         uint256 _orderId,
         address _user,
@@ -206,29 +212,32 @@ contract Exchange {
         address _tokenGive,
         uint256 _amountGive
     ) internal {
-        // Fee is paid by the user who filled the order (msg.sender)
-        // Fee is deducted from _amountGet
+        // Calculate the fee to be paid
         uint256 _feeAmount = (_amountGet * feePercent) / 100;
 
-        // Execute the trade
-        // msg.sender is the user who filled the order, while _user is who created the order
+        // Execute the trade: update balances
+        // Deduct tokens from the user who filled the order
         tokens[_tokenGet][msg.sender] =
             tokens[_tokenGet][msg.sender] -
             (_amountGet + _feeAmount);
 
+        // Add tokens to the order creator
         tokens[_tokenGet][_user] = tokens[_tokenGet][_user] + _amountGet;
 
-        // Charge fees
+        // Transfer the fee to the fee account
         tokens[_tokenGet][feeAccount] =
             tokens[_tokenGet][feeAccount] +
             _feeAmount;
 
+        // Deduct tokens from the order creator
         tokens[_tokenGive][_user] = tokens[_tokenGive][_user] - _amountGive;
+
+        // Add tokens to the user who filled the order
         tokens[_tokenGive][msg.sender] =
             tokens[_tokenGive][msg.sender] +
             _amountGive;
 
-        // Emit trade event
+        // Emit a trade event
         emit Trade(
             _orderId,
             msg.sender,
@@ -240,5 +249,4 @@ contract Exchange {
             block.timestamp
         );
     }
-
 }

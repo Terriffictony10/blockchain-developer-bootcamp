@@ -18,6 +18,21 @@
     "explorerURL": "#"
   },
   "11155111": {
+     "exchange": {
+      "address": "0xBf4d9ea3bA029303751794564D2E431Fe6901855"
+    },
+    "TonyToken": {
+      "address": "0x0bA2bA8FF531694560a5D8cb9b83258B81bF3307",
+      "symbol": "TTK"
+    },
+    "ElyseToken": {
+      "address": "0x7Dbdad7Ff07eDBaF188f588534f6C97Db25271b7",
+      "symbol": "EEK"
+    },
+    "IrisToken": {
+      "address": "0x79F385562C25B456F77D5F4ec25E3243D196998E",
+      "symbol": "IRIS"
+    },
   	"explorerURL": "https://sepolia.etherscan.io/"
   }
 
